@@ -32,7 +32,7 @@ client.on("messageCreate", (message) => {
   let msg = message.content;
   if (!last || new Date() - last > 60 * MINUTE) msg = `**New Vent:**\n${msg}`;
 
-  VENT_CHANNEL.send(msg);
+  VENT_CHANNEL.send(msg).catch(console.error);
   LAST_VENT.set(message.channel.id, new Date());
 });
 
