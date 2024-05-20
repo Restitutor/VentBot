@@ -13,27 +13,25 @@ const client = new Client({
   partials: [Partials.User, Partials.Channel, Partials.Message],
 });
 
-let VENT_CHANNEL;
-const MINUTE = 1000 * 60;
-
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, async (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
-  VENT_CHANNEL = await client.channels.fetch(VENT_ID);
-});
 
-const LAST_VENT = new Map();
+  const LAST_VENT = new Map();
+  const MINUTE = 1000 * 60;
+  const VENT_CHANNEL = await client.channels.fetch(VENT_ID);
 
-client.on("messageCreate", (message) => {
-  if (!message.channel.isDMBased()) return;
-  const last = LAST_VENT.get(message.channel.id);
+  client.on("messageCreate", (message) => {
+    if (!message.channel.isDMBased()) return;
+    const last = LAST_VENT.get(message.channel.id);
 
-  let msg = message.content;
-  if (!last || new Date() - last > 60 * MINUTE) msg = `**New Vent:**\n${msg}`;
+    let msg = message.content;
+    if (!last || new Date() - last > 60 * MINUTE) msg = `**New Vent:**\n${msg}`;
 
-  VENT_CHANNEL.send(msg).catch(console.error);
-  LAST_VENT.set(message.channel.id, new Date());
+    VENT_CHANNEL.send(msg).catch(console.error);
+    LAST_VENT.set(message.channel.id, new Date());
+  });
 });
 
 // Log in to Discord with your client's token
