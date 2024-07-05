@@ -1,6 +1,6 @@
 // Require the necessary discord.js classes
 const { Client, Events, GatewayIntentBits, Partials } = require("discord.js");
-const { token, VENT_ID } = require("./config.json");
+const { token, CHANNEL_ID, prefix } = require("./config.json");
 
 // Create a new client instance
 const client = new Client({
@@ -18,19 +18,19 @@ const client = new Client({
 client.once(Events.ClientReady, async (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
 
-  const LAST_VENT = new Map();
+  const LAST_MSG = new Map();
   const MINUTE = 1000 * 60;
-  const VENT_CHANNEL = await client.channels.fetch(VENT_ID);
+  const CHANNEL = await client.channels.fetch(CHANNEL_ID);
 
   client.on("messageCreate", (message) => {
     if (!message.channel.isDMBased()) return;
-    const last = LAST_VENT.get(message.channel.id);
+    const last = LAST_MSG.get(message.channel.id);
 
     let msg = message.content;
-    if (!last || new Date() - last > 60 * MINUTE) msg = `**New Vent:**\n${msg}`;
+    if (!last || new Date() - last > 60 * MINUTE) msg = `**New ${prefix}:**\n${msg}`;
 
-    VENT_CHANNEL.send(msg).catch(console.error);
-    LAST_VENT.set(message.channel.id, new Date());
+    CHANNEL.send(msg).catch(console.error);
+    LAST_MSG.set(message.channel.id, new Date());
   });
 });
 
